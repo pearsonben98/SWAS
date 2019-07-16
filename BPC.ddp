@@ -1,0 +1,57 @@
+U,BPC
+I,getdata,0,input,numeric
+
+ENDIO
+
+F,Poll,0
+function Poll(string out, until)
+// this function will poll the port with given string and read
+// the response until the given character.  Returns NULL (empty)
+// if there is an error
+
+if (argc < 2)
+   throw("Invalid number of parameters")
+endif
+private string in
+try
+   // lock the port
+   if (!LockPort())
+      throw("Unable to lock port")
+   endif
+   // clear anything pending
+   Purge()
+   // output our string
+   Write(out)
+   // and read until the eol:
+   in = ReadUntil(until) 
+   // release the port
+   UnlockPort()
+   // and return the response
+   return(in)
+catch()
+   // error occured
+   UnlockPort()
+   throw()
+endcatch
+// return NULL to indicate error.  This should never happen
+// because of the throw() statement above
+return(NULL)
+
+ENDIO
+
+E,OnLoad
+
+ENDIO
+
+E,OnUnload
+
+ENDIO
+
+E,OnReceive
+
+ENDIO
+
+E,OnSend
+
+ENDIO
+
