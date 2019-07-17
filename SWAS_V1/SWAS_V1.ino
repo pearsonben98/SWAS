@@ -10,7 +10,7 @@ DAQfactory computer
 #include <ModbusSerial.h>  //for modbus chip MAX485
 //#include <Mux.h>  //multiplex for CD74HC4067
 
-const int modbus_ID = 3;  //this is unique for each case (1-247)
+const int modbus_ID = 5;  //this is unique for each case (1-247)
 
 //case details, 'v' prefix indicates 'value of' num_cans for example
 const word v_case_id = modbus_ID;     //should match the modbus ID
@@ -76,7 +76,7 @@ void setup() {
 //    mux.setup(8,9,10,11,A0); // initialise Mux
     
     // Config Modbus Serial (port, speed, byte format) 
-    mb.config(&Serial, 115200, SERIAL_8N1);  // &serial (uno) or &serial1 (leonardo)
+    mb.config(&Serial1, 115200, SERIAL_8N1);  // &serial (uno) or &serial1 (leonardo)
     
     // Set the Slave ID (1-247)
     mb.setSlaveId(modbus_ID);  
