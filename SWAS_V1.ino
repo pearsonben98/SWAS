@@ -10,7 +10,7 @@ DAQfactory computer
 #include <ModbusSerial.h>  //for modbus chip MAX485
 //#include <Mux.h>  //multiplex for CD74HC4067
 
-const int modbus_ID = 5;  //this is unique for each case (1-247)
+const int modbus_ID = 3;  //this is unique for each case (1-247)
 
 //case details, 'v' prefix indicates 'value of' num_cans for example
 const word v_case_id = modbus_ID;     //should match the modbus ID
@@ -71,7 +71,7 @@ ModbusSerial mb;
 //Mux mux;
 
 void setup() {
-    pinMode(13, OUTPUT);
+  
     //Config Multiplexer
 //    mux.setup(8,9,10,11,A0); // initialise Mux
     
@@ -109,7 +109,6 @@ void setup() {
     mb.addCoil(valve14);
     mb.addCoil(valve15);
     */
-   
     // addHreg() to store 'word' (unsigned 16 bit int) values on the slave 
     mb.addHreg(case_id);
     mb.addHreg(flow_thro);
@@ -131,7 +130,7 @@ void setup() {
     mb.addHreg(CH4);
     mb.addHreg(trig_type);
     mb.addHreg(leak_rate);
-
+	
     //put case data into registers
     mb.Hreg(case_id, v_case_id);
     mb.Hreg(flow_thro, v_flow_thro);
@@ -142,8 +141,7 @@ void setup() {
 void loop() {
    // Call once inside loop() 
    mb.task();
-   digitalWrite(13, mb.Coil(0));
-
+   
    // Attach solenoid pins to coil registers     
    digitalWrite(22, mb.Coil(0));
    digitalWrite(23, mb.Coil(1));
@@ -161,6 +159,8 @@ void loop() {
    digitalWrite(35, mb.Coil(13)); 
    digitalWrite(36, mb.Coil(14)); 
    digitalWrite(37, mb.Coil(15)); 
-
+	// cause these registers only store one thing at a time, we can only store information about one canister at a time.
+	// therefore in this loop, everytime a different timestamp is stored in the register, move everything from the current 
+	// registers onto the SD card before the registers overwrite
   
 }
