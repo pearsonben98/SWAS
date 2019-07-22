@@ -6,7 +6,7 @@ Uses modbus over rs485 for comms between arduino controlled SWAS case and
 DAQfactory computer
 */
 
-#include <Modbus.h>
+//#include <Modbus.h>
 #include <ModbusSerial.h>  //for modbus chip MAX485
 //#include <Mux.h>  //multiplex for CD74HC4067
 
@@ -130,8 +130,8 @@ void setup() {
     mb.addHreg(CH4);
     mb.addHreg(trig_type);
     mb.addHreg(leak_rate);
-	
-    //put case data into registers
+
+	//put case data into registers
     mb.Hreg(case_id, v_case_id);
     mb.Hreg(flow_thro, v_flow_thro);
     mb.Hreg(num_cans, v_num_cans);

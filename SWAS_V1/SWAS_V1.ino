@@ -6,7 +6,7 @@ Uses modbus over rs485 for comms between arduino controlled SWAS case and
 DAQfactory computer
 */
 
-#include <Modbus.h>
+//#include <Modbus.h>
 #include <ModbusSerial.h>  //for modbus chip MAX485
 //#include <Mux.h>  //multiplex for CD74HC4067
 
@@ -21,23 +21,7 @@ const word v_volume = 1400;
 //**********************************
 // Modbus Registers Offsets (0-9999)
 //variables 
-/*const int valve0 = 0; 
-const int valve1 = 1;
-const int valve2 = 2;
-const int valve3 = 3;
-const int valve4 = 4;
-const int valve5 = 5;
-const int valve6 = 6;
-const int valve7 = 7;
-const int valve8 = 8;
-const int valve9 = 9;
-const int valve10 = 10;
-const int valve11 = 11;
-const int valve12 = 12;
-const int valve13 = 13;
-const int valve14 = 14;
-const int valve15 = 15;
-*/
+
 // values to ask from the case
 const int case_id = 100;
 const int flow_thro = 101;
@@ -60,6 +44,10 @@ const int O3 = 212;
 const int CH4 = 213;
 const int trig_type = 214;
 const int leak_rate = 215;
+const int time_stamp_seconds = 216;
+const int time_stamp_closed = 217;
+const int time_stamp_closed_seconds = 218;
+
 //**********************************
 
 // Used Pins
@@ -75,8 +63,9 @@ void setup() {
     //Config Multiplexer
 //    mux.setup(8,9,10,11,A0); // initialise Mux
     
-    // Config Modbus Serial (port, speed, byte format) 
-    mb.config(&Serial, 115200, SERIAL_8N1);  // &serial (uno) or &serial1 (leonardo)
+    // Config Modbus Serial (port, speed, byte format, readEnable pin) 
+    mb.config(&Serial, 115200, SERIAL_8N1, 2);  // &serial (uno) or &serial1 (leonardo)
+    
     
     // Set the Slave ID (1-247)
     mb.setSlaveId(modbus_ID);  
@@ -92,31 +81,15 @@ void setup() {
     {
     mb.addCoil(i);
     }
-    /*mb.addCoil(valve0);
-    mb.addCoil(valve1);
-    mb.addCoil(valve2);
-    mb.addCoil(valve3);
-    mb.addCoil(valve4);
-    mb.addCoil(valve5);
-    mb.addCoil(valve6);
-    mb.addCoil(valve7);
-    mb.addCoil(valve8);
-    mb.addCoil(valve9);
-    mb.addCoil(valve10);
-    mb.addCoil(valve11);
-    mb.addCoil(valve12);
-    mb.addCoil(valve13);
-    mb.addCoil(valve14);
-    mb.addCoil(valve15);
-    */
-   
+
     // addHreg() to store 'word' (unsigned 16 bit int) values on the slave 
     mb.addHreg(case_id);
     mb.addHreg(flow_thro);
     mb.addHreg(num_cans);
     mb.addHreg(volume);
-
-    mb.addHreg(time_stamp);
+   
+    
+    
     mb.addHreg(fill_evac);
     mb.addHreg(psi);
     mb.addHreg(fill_dur);
@@ -131,8 +104,13 @@ void setup() {
     mb.addHreg(CH4);
     mb.addHreg(trig_type);
     mb.addHreg(leak_rate);
+    mb.addHreg(time_stamp);
+    mb.addHreg(time_stamp_seconds);
+    mb.addHreg(time_stamp_closed);  
+    mb.addHreg(time_stamp_closed_seconds);  
 
-    //put case data into registers
+
+    //put case data into registers  
     mb.Hreg(case_id, v_case_id);
     mb.Hreg(flow_thro, v_flow_thro);
     mb.Hreg(num_cans, v_num_cans);
@@ -161,6 +139,15 @@ void loop() {
    digitalWrite(35, mb.Coil(13)); 
    digitalWrite(36, mb.Coil(14)); 
    digitalWrite(37, mb.Coil(15)); 
+   
+  int j = 0;
+  
+  /*for(int i=22, i < 38, i++){
+    digitalWrite(i, mb.Coil(j);
+    j++;
+  }*/
+  
 
+   
   
 }
