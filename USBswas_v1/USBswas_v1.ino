@@ -18,8 +18,11 @@ const word v_case_id = modbus_ID;     //should match the modbus ID
 const word v_flow_thro = 0;
 const word v_num_cans = 16;
 const word v_volume = 1400;
+word v_changes = 0;
+word v_flight_id;
 
 //**********************************
+
 // Modbus Registers Offsets (0-9999)
 //variables 
 int start = 1;
@@ -28,6 +31,8 @@ const int case_id = 100;
 const int flow_thro = 101;
 const int num_cans = 102;
 const int volume = 103;
+const int flight_id = 104;
+const int changes = 105;
 
 // values to pass to the case
 const int time_stamp1 = 201;
@@ -109,11 +114,12 @@ uint32_t hreg232;
 uint32_t concat;
 
 
+
+
+
 // ModbusSerial object
 ModbusSerial mb;
-//Modbus modbus = Modbus();
-// multiplex setup
-//Mux mux;
+
 
 void setup() {
 
@@ -136,15 +142,10 @@ void setup() {
     // don't do anything more:
     while (1);
   }
-  Serial.println("card initialized.");
 
-  
-  
-
-
-
+   getLineCount("plswork1.txt");
     
-  
+    
     pinMode(13, OUTPUT);
     //Config Multiplexer
 //    mux.setup(8,9,10,11,A0); // initialise Mux
@@ -173,6 +174,8 @@ void setup() {
     mb.addHreg(flow_thro);
     mb.addHreg(num_cans);
     mb.addHreg(volume);
+    mb.addHreg(flight_id);
+    mb.addHreg(changes);
    
     mb.addHreg(vstat1);
     mb.addHreg(vstat2);
@@ -216,8 +219,11 @@ void setup() {
     mb.Hreg(flow_thro, v_flow_thro);
     mb.Hreg(num_cans, v_num_cans);
     mb.Hreg(volume, v_volume);
+    mb.Hreg(changes, v_changes);
 
-    //dataWriteln("testval1.txt","Testing register Values.");
+    
+    //dataWriteln("LOGTEST6.txt", "timestamp1 | timestamp2 | vstat 1 to 16 | fill_evac | psi | fill_dur | torr | vac_dur | lat | lon | alt | CO | CO2 | O3 | CH4 | trig_type | leak_rate");
+
 }
 
 void loop() {
@@ -246,6 +252,12 @@ void loop() {
    digitalWrite(35, mb.Coil(13)); 
    digitalWrite(36, mb.Coil(14)); 
    digitalWrite(37, mb.Coil(15));   
+
+
+   
+
+   
+
 
 
    hreg201 = mb.Hreg(201);
@@ -284,14 +296,80 @@ void loop() {
    hreg232 = mb.Hreg(232);
    
   concat = hreg202 << 16 | hreg201;
-
+  
+  String datastring = "";
+  
   if(hreg201 != 0){
+    
     if(prev < concat){
-      prev = concat;
       
-      dataWriteln("LOGTEST.txt", "timestamp1 | timestamp2 | vstat 1 to 16 | fill_evac | psi | fill_dur | torr | vac_dur | lat | lon | alt | CO | CO2 | O3 | CH4 | trig_type | leak_rate");
-      dataWriteln("LOGTEST5.txt", String(concat));
-      // dataWriteln("LOGTEST1.txt", "testing files");
+      prev = concat;
+      datastring += String(hreg201);
+      datastring += "\t";
+      datastring += String(hreg202);
+      datastring += "\t";
+      datastring += String(hreg203);
+      datastring += "\t";
+      datastring += String(hreg204);
+      datastring += "\t";
+      datastring += String(hreg205);
+      datastring += "\t";
+      datastring += String(hreg206);
+      datastring += "\t";
+      datastring += String(hreg207);
+      datastring += "\t";
+      datastring += String(hreg208);
+      datastring += "\t";
+      datastring += String(hreg209);
+      datastring += "\t";
+      datastring += String(hreg210);
+      datastring += "\t";
+      datastring += String(hreg211);
+      datastring += "\t";
+      datastring += String(hreg212);
+      datastring += "\t";
+      datastring += String(hreg213);
+      datastring += "\t";
+      datastring += String(hreg214);
+      datastring += "\t";
+      datastring += String(hreg215);
+      datastring += "\t";
+      datastring += String(hreg216);
+      datastring += "\t";
+      datastring += String(hreg217);
+      datastring += "\t";
+      datastring += String(hreg218);
+      datastring += "\t";
+      datastring += String(hreg219);
+      datastring += "\t";
+      datastring += String(hreg220);
+      datastring += "\t";
+      datastring += String(hreg221);
+      datastring += "\t";
+      datastring += String(hreg222);
+      datastring += "\t";
+      datastring += String(hreg223);
+      datastring += "\t";
+      datastring += String(hreg224);
+      datastring += "\t";
+      datastring += String(hreg225);
+      datastring += "\t";
+      datastring += String(hreg226);
+      datastring += "\t";
+      datastring += String(hreg227);
+      datastring += "\t";
+      datastring += String(hreg228);
+      datastring += "\t";
+      datastring += String(hreg229);
+      datastring += "\t";
+      datastring += String(hreg230);
+      datastring += "\t";
+      datastring += String(hreg231);
+      datastring += "\t";
+      datastring += String(hreg232);
+      
+      dataWriteln("plswork1.txt", datastring);
+      //dataWriteln("LOGTEST6.txt", String(concat));
 
     }
   }
@@ -326,4 +404,15 @@ void dataWriteln(String filename, String dataString){
     else {
       Serial.println("error opening datalog.txt");
     }
+}
+
+int getLineCount(String filename){
+  File dataFile = SD.open(filename);
+  String buffer;
+  while (dataFile.available()) {
+    buffer = dataFile.readStringUntil('\n');
+    v_changes++;         
+  }
+      
+  dataFile.close();
 }
