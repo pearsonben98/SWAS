@@ -75,6 +75,37 @@ const int chipSelect = 53;
 uint32_t prev = 1;
 uint32_t hreg201;
 uint32_t hreg202;
+uint32_t hreg203;
+uint32_t hreg204;
+uint32_t hreg205;
+uint32_t hreg206;
+uint32_t hreg207;
+uint32_t hreg208;
+uint32_t hreg209;
+uint32_t hreg210;
+uint32_t hreg211;
+uint32_t hreg212;
+uint32_t hreg213;
+uint32_t hreg214;
+uint32_t hreg215;
+uint32_t hreg216;
+uint32_t hreg217;
+uint32_t hreg218;
+uint32_t hreg219;
+uint32_t hreg220;
+uint32_t hreg221;
+uint32_t hreg222;
+uint32_t hreg223;
+uint32_t hreg224;
+uint32_t hreg225;
+uint32_t hreg226;
+uint32_t hreg227;
+uint32_t hreg228;
+uint32_t hreg229;
+uint32_t hreg230;
+uint32_t hreg231;
+uint32_t hreg232;
+
 uint32_t concat;
 
 
@@ -160,7 +191,6 @@ void setup() {
     mb.addHreg(vstat15);
     mb.addHreg(vstat16);
 
-    
     mb.addHreg(time_stamp1);
     mb.addHreg(time_stamp2);
     mb.addHreg(fill_evac);
@@ -220,40 +250,53 @@ void loop() {
 
    hreg201 = mb.Hreg(201);
    hreg202 = mb.Hreg(202);
-   concat = hreg202 << 16 | hreg201;
+  
+   hreg203 = mb.Hreg(203);
+   hreg204 = mb.Hreg(204);
+   hreg205 = mb.Hreg(205);
+   hreg206 = mb.Hreg(206);
+   hreg207 = mb.Hreg(207);
+   hreg208 = mb.Hreg(208);
+   hreg209 = mb.Hreg(209);
+   hreg210 = mb.Hreg(210);
+   hreg211 = mb.Hreg(211);
+   hreg212 = mb.Hreg(212);
+   hreg213 = mb.Hreg(213);
+   hreg214 = mb.Hreg(214);
+   hreg215 = mb.Hreg(215);
+   hreg216 = mb.Hreg(216);
+   hreg217 = mb.Hreg(217);
+   hreg218 = mb.Hreg(218);
+   
+   hreg219 = mb.Hreg(219);
+   hreg220 = mb.Hreg(220);
+   hreg221 = mb.Hreg(221);
+   hreg222 = mb.Hreg(222);
+   hreg223 = mb.Hreg(223);
+   hreg224 = mb.Hreg(224);
+   hreg225 = mb.Hreg(225);
+   hreg226 = mb.Hreg(226);
+   hreg227 = mb.Hreg(227);
+   hreg228 = mb.Hreg(228);
+   hreg229 = mb.Hreg(229);
+   hreg230 = mb.Hreg(230);
+   hreg231 = mb.Hreg(231);
+   hreg232 = mb.Hreg(232);
+   
+  concat = hreg202 << 16 | hreg201;
 
   if(hreg201 != 0){
     if(prev < concat){
-    prev = concat;
-    
-    dataWrite("data3.txt", "Timestamp: ");
-    dataWriteln("data3.txt", String(prev));
-  }
+      prev = concat;
+      
+      dataWriteln("LOGTEST.txt", "timestamp1 | timestamp2 | vstat 1 to 16 | fill_evac | psi | fill_dur | torr | vac_dur | lat | lon | alt | CO | CO2 | O3 | CH4 | trig_type | leak_rate");
+      dataWriteln("LOGTEST5.txt", String(concat));
+      // dataWriteln("LOGTEST1.txt", "testing files");
+
+    }
   }
 
-  
-  
-  
- /* if(prev == 1 || prev < (((uint32_t)mb.Hreg(216) >> 16) | (mb.Hreg(200) + 65537))){
-    prev = (((uint32_t)mb.Hreg(216) >> 16) | (mb.Hreg(200) + 65537));
-    dataWrite("250719.txt", "Timestamp: ");
-    dataWrite("250719.txt", String(prev));
-    dataWriteln("250719.txt", "");
-    
-  }
-    
-  if(prev == 1000){
-    
-    dataWrite("testval5.txt", "Hreg(216): ");
-    dataWriteln("testval5.txt", String(hreg216));
-    dataWrite("testval5.txt", "Hreg(200): ");
-    dataWriteln("testval5.txt", String(hreg200));
-    dataWrite("testval5.txt", "concatenated: ");
-    dataWriteln("testval15.txt", String(concat));
-    prev= 1;
-  }
-  prev++;
-   */
+ 
 }
 
 void dataWrite(String filename, String dataString){
@@ -283,27 +326,4 @@ void dataWriteln(String filename, String dataString){
     else {
       Serial.println("error opening datalog.txt");
     }
-}
-
-uint32_t getTimestamp(){
-
-  //mb.readRegisters(200,1);
-}
-
-void readSDcard(String filename){
-
-    File dataFile = SD.open(filename);
-
-    if (dataFile) {
-        Serial.println("datalog4.txt:");
-        
-        while (dataFile.available()) {
-            Serial.write(dataFile.read());
-        }
-  
-        dataFile.close();
-  } else {
-    Serial.println("error opening datalog2.txt");
-  }
-  
 }
