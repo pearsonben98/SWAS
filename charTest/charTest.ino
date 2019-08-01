@@ -21,7 +21,6 @@ const word v_volume = 1400;
 word v_changes = 0;
 
 
-
 //**********************************
 
 // Modbus Registers Offsets (0-9999)
@@ -36,10 +35,9 @@ const int flight_id = 104;
 const int changes = 105;
 const int readLine = 106;
 
-
 int prevLineValue = 0;
 int readLineValue;
-int prev105 = 0;
+
 
 // values to pass to the case
 const int time_stamp1 = 201;
@@ -142,6 +140,7 @@ void setup() {
     while (1);
   }
 
+   getLineCount("plswork1.txt");
     
     
     pinMode(13, OUTPUT);
@@ -217,19 +216,24 @@ void setup() {
     mb.Hreg(num_cans, v_num_cans);
     mb.Hreg(volume, v_volume);
     mb.Hreg(changes, v_changes);
-        
+
+
+    //dataWriteln("writest.txt", getLine("plswork1.txt", 7));
+    //dataWriteln("writest.txt", getLine("plswork1.txt", 8));
+
+    // reads line 7 from plswork1.txt, and stores all the datapoints into the corresponding registers correctly
+    //formatData(getLine("plswork1.txt",7));
+
+
+    
+    //dataWriteln("LOGTEST6.txt", "timestamp1 | timestamp2 | vstat 1 to 16 | fill_evac | psi | fill_dur | torr | vac_dur | lat | lon | alt | CO | CO2 | O3 | CH4 | trig_type | leak_rate");
+    
 }
 
 void loop() {
     
    // Call once inside loop() 
    mb.task();
-
-   
-   if(mb.Hreg(105) == 0){
-      getLineCount("plswork2.txt");
-      mb.Hreg(changes, v_changes);
-   }
 
    
    
@@ -251,18 +255,13 @@ void loop() {
    digitalWrite(34, mb.Coil(12)); 
    digitalWrite(35, mb.Coil(13)); 
    digitalWrite(36, mb.Coil(14)); 
-   digitalWrite(37, mb.Coil(15)); 
-
+   digitalWrite(37, mb.Coil(15));   
    
-   int hreg105 = mb.Hreg(105);
    readLineValue = mb.Hreg(106);
-
-  
    
    if(readLineValue != prevLineValue){
-      formatData(getLine("plswork2.txt", readLineValue));
-      //readLineValue = prevLineValue;
-      prevLineValue = readLineValue;
+      formatData(getLine("plswork1.txt", readLineValue));
+      readLineValue = prevLineValue;
    }
 
    hreg201 = mb.Hreg(201);
@@ -375,7 +374,7 @@ void loop() {
       datastring += "\t";
       datastring += String(hreg232);
       
-      dataWriteln("plswork2.txt", datastring);
+      dataWriteln("plswork1.txt", datastring);
       //dataWriteln("LOGTEST6.txt", String(concat));
 
     }
@@ -416,7 +415,6 @@ void dataWriteln(String filename, String dataString){
 int getLineCount(String filename){
   File dataFile = SD.open(filename);
   String buffer;
-  v_changes = 0;
   while (dataFile.available()) {
     buffer = dataFile.readStringUntil('\n');
     v_changes++;         
@@ -486,14 +484,12 @@ String getLine(String filename, int lineNumber){
   while(dataFile.available()){
     String data = dataFile.readStringUntil('\r');
     linenum++;
-    
+
     if(linenum == lineNumber){
-      dataFile.close();
       return data;
     }
     
   }
-  dataFile.close();
   
 }
 
@@ -513,8 +509,8 @@ void formatData(String data){
     //sscanf(token, "%d", &value);
     value = atoi(token);
 
-    //dataWrite("char2.txt", String(value));
-    //dataWrite("char2.txt", "\t");
+    dataWrite("char2.txt", String(value));
+    dataWrite("char2.txt", "\t");
 
     // places the integer into the register address 201 (timestamp1)
     mb.Hreg(i, value);
@@ -530,10 +526,10 @@ void formatData(String data){
 
       i++;
 
-     // dataWrite("char2.txt", String(value));
-      //dataWrite("char2.txt", "\t");
+      dataWrite("char2.txt", String(value));
+      dataWrite("char2.txt", "\t");
     }
-    //dataWriteln("char2.txt", "");
+    dataWriteln("char2.txt", "");
 
    
 }

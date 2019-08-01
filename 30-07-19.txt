@@ -1,0 +1,30 @@
+two functions in the arduino file which enable the arduino to read a specific line from a file on the SD card, extract the 
+information and then stores the information in the correct register locations. these registers can then be read by DAQfactory,
+in order to store all the information in a table format.
+
+
+Currently i am in the process of getting the table to work. i think you need a 2d array to store the data in the table correctly
+
+
+
+
+to check if it works, load daqfactory and connect to case5.
+
+then do ?array to check value of the array.
+
+then, device.swas.setregisters16(5,106,any number)
+
+then read registers 201-232. they should contain the details from the line you selected from the sd card
+
+
+
+
+
+made a sequence called filltable which is supposed to store the contents of the array into another 2d array, and then the 
+table in theory should display the contents of the 2d array 
+
+
+
+
+
+
