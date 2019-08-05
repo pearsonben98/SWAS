@@ -21,6 +21,9 @@ const word v_volume = 1400;
 word v_changes = 0;
 
 
+String myFile = "345.txt";
+
+
 
 //**********************************
 
@@ -28,7 +31,7 @@ word v_changes = 0;
 //variables 
 int start = 1;
 // values to ask from the case
-const int case_id = 100;
+const int case_id = 100;    
 const int flow_thro = 101;
 const int num_cans = 102;
 const int volume = 103;
@@ -226,10 +229,7 @@ void loop() {
    mb.task();
 
    
-   if(mb.Hreg(105) == 0){
-      getLineCount("plswork2.txt");
-      mb.Hreg(changes, v_changes);
-   }
+   
 
    
    
@@ -259,11 +259,7 @@ void loop() {
 
   
    
-   if(readLineValue != prevLineValue){
-      formatData(getLine("plswork2.txt", readLineValue));
-      //readLineValue = prevLineValue;
-      prevLineValue = readLineValue;
-   }
+   
 
    hreg201 = mb.Hreg(201);
    hreg202 = mb.Hreg(202);
@@ -375,11 +371,25 @@ void loop() {
       datastring += "\t";
       datastring += String(hreg232);
       
-      dataWriteln("plswork2.txt", datastring);
-      //dataWriteln("LOGTEST6.txt", String(concat));
+      dataWriteln(myFile, datastring);
 
     }
   }
+
+
+  if(mb.Hreg(105) == 0){
+      getLineCount(myFile);
+      mb.Hreg(changes, v_changes);
+   }
+
+
+
+
+  if(readLineValue != prevLineValue){
+      formatData(getLine(myFile, readLineValue));
+      //readLineValue = prevLineValue;
+      prevLineValue = readLineValue;
+   }
 
  
 }
@@ -414,6 +424,7 @@ void dataWriteln(String filename, String dataString){
 }
 
 int getLineCount(String filename){
+  
   File dataFile = SD.open(filename);
   String buffer;
   v_changes = 0;
@@ -424,57 +435,6 @@ int getLineCount(String filename){
       
   dataFile.close();
 }
-
-
-
-/*
-int[] getLine(String filename, int lineNumber){
-  
-  File dataFile = SD.open(filename);
-  int lineNum = 0;
-  int lineData[32];
-   
-  while(dataFile.available()){
-    if(lineNum = lineNumber){
-      lineData[lineNum] = dataFile.parseInt();
-      return lineData;
-    }
-    lineNum++;
-    
-  }
-  dataFile.close();
-  
-} */
-
-/*
-void getLine(String filename, int lineNumber){
-
-  File dataFile = SD.open("plswork1.txt");
-
-  char buffer[2000];
-  uint8_t i = 0;
-  int linenum = 0;
-
-  while(dataFile.available() && linenum != lineNumber + 1){
-    while(dataFile.available() && dataFile.peek() != '\n' && i < 1999){
-      buffer[i] = dataFile.read();
-      i++;
-    } 
-    linenum++;
-  }
-  
-
-  buffer[i+1] = '\0';
-  dataFile.close();
-
-  String datastring = "";
-  for(int i = 0; i < 400; i++){
-    datastring += String(buffer[i]);
-  }
-  dataWriteln("ples1.txt", datastring);
-
-  
-} */
 
 
 // FUNCTION WORKS PROPERLY FINALLY
@@ -497,6 +457,7 @@ String getLine(String filename, int lineNumber){
   
 }
 
+
 // FUNCTION WORKS TOO
 void formatData(String data){
 
@@ -513,9 +474,6 @@ void formatData(String data){
     //sscanf(token, "%d", &value);
     value = atoi(token);
 
-    //dataWrite("char2.txt", String(value));
-    //dataWrite("char2.txt", "\t");
-
     // places the integer into the register address 201 (timestamp1)
     mb.Hreg(i, value);
 
@@ -530,10 +488,9 @@ void formatData(String data){
 
       i++;
 
-     // dataWrite("char2.txt", String(value));
-      //dataWrite("char2.txt", "\t");
+     
     }
-    //dataWriteln("char2.txt", "");
+   
 
    
 }
