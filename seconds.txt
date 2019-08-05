@@ -1,9 +1,0 @@
-days since 1970 as integer from unix time
-
-how many seconds have elapsed since current day
-
-store both values in register
-
-
-
-to get current date, change days into seconds, and add to seconds

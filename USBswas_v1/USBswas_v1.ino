@@ -21,7 +21,7 @@ const word v_volume = 1400;
 word v_changes = 0;
 
 
-String myFile = "345.txt";
+String myFile = "pls9.txt";
 
 
 
@@ -145,6 +145,13 @@ void setup() {
     while (1);
   }
 
+
+
+  
+  
+  
+  
+
     
     
     pinMode(13, OUTPUT);
@@ -169,6 +176,14 @@ void setup() {
     {
     mb.addCoil(i);
     }
+
+
+
+
+
+  
+  
+    
 
     // addHreg() to store 'word' (unsigned 16 bit int) values on the slave 
     mb.addHreg(case_id);
@@ -220,6 +235,13 @@ void setup() {
     mb.Hreg(num_cans, v_num_cans);
     mb.Hreg(volume, v_volume);
     mb.Hreg(changes, v_changes);
+
+
+    getLineCount(myFile);
+  
+   formatData(getLine(myFile, v_changes));
+
+    
         
 }
 
@@ -257,9 +279,19 @@ void loop() {
    int hreg105 = mb.Hreg(105);
    readLineValue = mb.Hreg(106);
 
+
+  if(mb.Hreg(105) == 0){
+      getLineCount(myFile);
+      mb.Hreg(changes, v_changes);
+   }
+
+ 
   
-   
-   
+  if(readLineValue != prevLineValue && v_changes != 0){
+      formatData(getLine(myFile, readLineValue));
+      //readLineValue = prevLineValue;
+      prevLineValue = readLineValue;
+   }
 
    hreg201 = mb.Hreg(201);
    hreg202 = mb.Hreg(202);
@@ -377,19 +409,7 @@ void loop() {
   }
 
 
-  if(mb.Hreg(105) == 0){
-      getLineCount(myFile);
-      mb.Hreg(changes, v_changes);
-   }
-
-
-
-
-  if(readLineValue != prevLineValue){
-      formatData(getLine(myFile, readLineValue));
-      //readLineValue = prevLineValue;
-      prevLineValue = readLineValue;
-   }
+  
 
  
 }
@@ -432,7 +452,7 @@ int getLineCount(String filename){
     buffer = dataFile.readStringUntil('\n');
     v_changes++;         
   }
-      
+ 
   dataFile.close();
 }
 
@@ -483,7 +503,6 @@ void formatData(String data){
       
       token = strtok(NULL, "\t");
       value = atoi(token);
-
       mb.Hreg(i, value);
 
       i++;
