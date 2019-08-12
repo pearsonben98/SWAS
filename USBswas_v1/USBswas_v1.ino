@@ -21,8 +21,9 @@ const word v_volume = 1400;
 word v_changes = 0;
 
 
-String myFile = "pls9.txt";
-
+unsigned long position = 0;
+String myFile = "pls9wo.txt";
+int interval = 0;
 
 
 //**********************************
@@ -30,6 +31,7 @@ String myFile = "pls9.txt";
 // Modbus Registers Offsets (0-9999)
 //variables 
 int start = 1;
+
 // values to ask from the case
 const int case_id = 100;    
 const int flow_thro = 101;
@@ -38,8 +40,13 @@ const int volume = 103;
 const int flight_id = 104;
 const int changes = 105;
 const int readLine = 106;
+const int writeLine = 107;
+const int readFrom = 108;
+const int readLine1 = 109;
+const int confirmReadFrom = 110;
 
-
+int prevLineValue1 = 0;
+int readLineValue1;
 int prevLineValue = 0;
 int readLineValue;
 int prev105 = 0;
@@ -65,9 +72,9 @@ const int vstat14 = 216;
 const int vstat15 = 217;
 const int vstat16 = 218;
 
-const int fill_evac = 219;
-const int psi = 220;
-const int fill_dur = 221;
+const int bottlenum = 219;
+const int valve_state = 220;
+const int psi = 221;
 const int torr = 222;
 const int vac_dur = 223;
 const int lat = 224;
@@ -88,38 +95,6 @@ const int ledPin = 13;
 const int chipSelect = 53;
 
 uint32_t prev = 1;
-uint32_t hreg201;
-uint32_t hreg202;
-uint32_t hreg203;
-uint32_t hreg204;
-uint32_t hreg205;
-uint32_t hreg206;
-uint32_t hreg207;
-uint32_t hreg208;
-uint32_t hreg209;
-uint32_t hreg210;
-uint32_t hreg211;
-uint32_t hreg212;
-uint32_t hreg213;
-uint32_t hreg214;
-uint32_t hreg215;
-uint32_t hreg216;
-uint32_t hreg217;
-uint32_t hreg218;
-uint32_t hreg219;
-uint32_t hreg220;
-uint32_t hreg221;
-uint32_t hreg222;
-uint32_t hreg223;
-uint32_t hreg224;
-uint32_t hreg225;
-uint32_t hreg226;
-uint32_t hreg227;
-uint32_t hreg228;
-uint32_t hreg229;
-uint32_t hreg230;
-uint32_t hreg231;
-uint32_t hreg232;
 
 uint32_t concat;
 
@@ -134,9 +109,9 @@ void setup() {
       ; // wait for serial port to connect. Needed for native USB port only
     }
     
-    Serial.println("testing serial");
+   // Serial.println("testing serial");
 
-    Serial.print("Initializing SD card...");
+   // Serial.print("Initializing SD card...");
 
   // see if the card is present and can be initialized:
   if (!SD.begin(chipSelect)) {
@@ -180,7 +155,6 @@ void setup() {
 
 
 
-
   
   
     
@@ -193,6 +167,11 @@ void setup() {
     mb.addHreg(flight_id);
     mb.addHreg(changes);
     mb.addHreg(readLine);
+    mb.addHreg(writeLine);
+    mb.addHreg(readFrom);
+    mb.addHreg(readLine1);
+    mb.addHreg(confirmReadFrom);
+
    
     mb.addHreg(vstat1);
     mb.addHreg(vstat2);
@@ -213,9 +192,9 @@ void setup() {
 
     mb.addHreg(time_stamp1);
     mb.addHreg(time_stamp2);
-    mb.addHreg(fill_evac);
+    mb.addHreg(bottlenum);
+    mb.addHreg(valve_state);
     mb.addHreg(psi);
-    mb.addHreg(fill_dur);
     mb.addHreg(torr);
     mb.addHreg(vac_dur);
     mb.addHreg(lat);
@@ -237,7 +216,7 @@ void setup() {
     mb.Hreg(changes, v_changes);
 
 
-    getLineCount(myFile);
+   getLineCount(myFile);
   
    formatData(getLine(myFile, v_changes));
 
@@ -278,6 +257,11 @@ void loop() {
    
    int hreg105 = mb.Hreg(105);
    readLineValue = mb.Hreg(106);
+   readLineValue1 = mb.Hreg(109);
+
+
+  int hreg108 = mb.Hreg(108);
+  
 
 
   if(mb.Hreg(105) == 0){
@@ -285,129 +269,39 @@ void loop() {
       mb.Hreg(changes, v_changes);
    }
 
- 
   
-  if(readLineValue != prevLineValue && v_changes != 0){
-      formatData(getLine(myFile, readLineValue));
-      //readLineValue = prevLineValue;
-      prevLineValue = readLineValue;
-   }
-
-   hreg201 = mb.Hreg(201);
-   hreg202 = mb.Hreg(202);
   
-   hreg203 = mb.Hreg(203);
-   hreg204 = mb.Hreg(204);
-   hreg205 = mb.Hreg(205);
-   hreg206 = mb.Hreg(206);
-   hreg207 = mb.Hreg(207);
-   hreg208 = mb.Hreg(208);
-   hreg209 = mb.Hreg(209);
-   hreg210 = mb.Hreg(210);
-   hreg211 = mb.Hreg(211);
-   hreg212 = mb.Hreg(212);
-   hreg213 = mb.Hreg(213);
-   hreg214 = mb.Hreg(214);
-   hreg215 = mb.Hreg(215);
-   hreg216 = mb.Hreg(216);
-   hreg217 = mb.Hreg(217);
-   hreg218 = mb.Hreg(218);
-   
-   hreg219 = mb.Hreg(219);
-   hreg220 = mb.Hreg(220);
-   hreg221 = mb.Hreg(221);
-   hreg222 = mb.Hreg(222);
-   hreg223 = mb.Hreg(223);
-   hreg224 = mb.Hreg(224);
-   hreg225 = mb.Hreg(225);
-   hreg226 = mb.Hreg(226);
-   hreg227 = mb.Hreg(227);
-   hreg228 = mb.Hreg(228);
-   hreg229 = mb.Hreg(229);
-   hreg230 = mb.Hreg(230);
-   hreg231 = mb.Hreg(231);
-   hreg232 = mb.Hreg(232);
-   
-  concat = hreg202 << 16 | hreg201;
-  
-  String datastring = "";
-  
-  if(hreg201 != 0){
+  if((mb.Hreg(108) != 0) && (mb.Hreg(110) == 1)){
+    startFrom();
     
-    if(prev < concat){
-      
-      prev = concat;
-      //datastring = String(concat);
-      //datastring += "\t";
-      datastring += String(hreg201);
-      datastring += "\t";
-      datastring += String(hreg202);
-      datastring += "\t";
-      datastring += String(hreg203);
-      datastring += "\t";
-      datastring += String(hreg204);
-      datastring += "\t";
-      datastring += String(hreg205);
-      datastring += "\t";
-      datastring += String(hreg206);
-      datastring += "\t";
-      datastring += String(hreg207);
-      datastring += "\t";
-      datastring += String(hreg208);
-      datastring += "\t";
-      datastring += String(hreg209);
-      datastring += "\t";
-      datastring += String(hreg210);
-      datastring += "\t";
-      datastring += String(hreg211);
-      datastring += "\t";
-      datastring += String(hreg212);
-      datastring += "\t";
-      datastring += String(hreg213);
-      datastring += "\t";
-      datastring += String(hreg214);
-      datastring += "\t";
-      datastring += String(hreg215);
-      datastring += "\t";
-      datastring += String(hreg216);
-      datastring += "\t";
-      datastring += String(hreg217);
-      datastring += "\t";
-      datastring += String(hreg218);
-      datastring += "\t";
-      datastring += String(hreg219);
-      datastring += "\t";
-      datastring += String(hreg220);
-      datastring += "\t";
-      datastring += String(hreg221);
-      datastring += "\t";
-      datastring += String(hreg222);
-      datastring += "\t";
-      datastring += String(hreg223);
-      datastring += "\t";
-      datastring += String(hreg224);
-      datastring += "\t";
-      datastring += String(hreg225);
-      datastring += "\t";
-      datastring += String(hreg226);
-      datastring += "\t";
-      datastring += String(hreg227);
-      datastring += "\t";
-      datastring += String(hreg228);
-      datastring += "\t";
-      datastring += String(hreg229);
-      datastring += "\t";
-      datastring += String(hreg230);
-      datastring += "\t";
-      datastring += String(hreg231);
-      datastring += "\t";
-      datastring += String(hreg232);
-      
-      dataWriteln(myFile, datastring);
-
-    }
   }
 
+  /*
+  
+  if(readLineValue1 != prevLineValue1){
+    formatData(getLine1(myFile));
+    prevLineValue1 = readLineValue1;
+    interval++;
+  }
+  
+ */
+  
+  if(readLineValue != prevLineValue && v_changes != 0){
+      formatData(getLine1(myFile, interval));
+      prevLineValue = readLineValue;
+      interval++;
+   }
+
+   
+   
+  //concat = hreg202 << 16 | hreg201;
+  
+  // puts register values into the SD card
+  if(mb.Hreg(107) == 1){
+    writeToSD();
+    
+    mb.Hreg(107, 0);
+  }
 
   
 
@@ -433,6 +327,7 @@ void dataWriteln(String filename, String dataString){
     File dataFile = SD.open(filename, FILE_WRITE);
 
     if (dataFile) {
+     
     dataFile.println(dataString);
     dataFile.close();
     // print to the serial port too:
@@ -462,8 +357,8 @@ String getLine(String filename, int lineNumber){
 
   File dataFile = SD.open(filename);
   int linenum = 0;
-
   while(dataFile.available()){
+    
     String data = dataFile.readStringUntil('\r');
     linenum++;
     
@@ -510,6 +405,133 @@ void formatData(String data){
      
     }
    
-
-   
 }
+
+void writeToSD(){
+
+    String datastring = "";
+
+    //datastring = String(concat);
+    //datastring += "\t";
+    datastring += String(mb.Hreg(201));
+    datastring += "\t";
+    datastring += String(mb.Hreg(202));
+    datastring += "\t";
+    datastring += String(mb.Hreg(203));
+    datastring += "\t";
+    datastring += String(mb.Hreg(204));
+    datastring += "\t";
+    datastring += String(mb.Hreg(205));
+    datastring += "\t";
+    datastring += String(mb.Hreg(206));
+    datastring += "\t";
+    datastring += String(mb.Hreg(207));
+    datastring += "\t";
+    datastring += String(mb.Hreg(208));
+    datastring += "\t";
+    datastring += String(mb.Hreg(209));
+    datastring += "\t";
+    datastring += String(mb.Hreg(210));
+    datastring += "\t";
+    datastring += String(mb.Hreg(211));
+    datastring += "\t";
+    datastring += String(mb.Hreg(212));
+    datastring += "\t";
+    datastring += String(mb.Hreg(213));
+    datastring += "\t";
+    datastring += String(mb.Hreg(214));
+    datastring += "\t";
+    datastring += String(mb.Hreg(215));
+    datastring += "\t";
+    datastring += String(mb.Hreg(216));
+    datastring += "\t";
+    datastring += String(mb.Hreg(217));
+    datastring += "\t";
+    datastring += String(mb.Hreg(218));
+    datastring += "\t";
+    datastring += String(mb.Hreg(219));
+    datastring += "\t";
+    datastring += String(mb.Hreg(220));
+    datastring += "\t";
+    datastring += String(mb.Hreg(221));
+    datastring += "\t";
+    datastring += String(mb.Hreg(222));
+    datastring += "\t";
+    datastring += String(mb.Hreg(223));
+    datastring += "\t";
+    datastring += String(mb.Hreg(224));
+    datastring += "\t";
+    datastring += String(mb.Hreg(225));
+    datastring += "\t";
+    datastring += String(mb.Hreg(226));
+    datastring += "\t";
+    datastring += String(mb.Hreg(227));
+    datastring += "\t";
+    datastring += String(mb.Hreg(228));
+    datastring += "\t";
+    datastring += String(mb.Hreg(229));
+    datastring += "\t";
+    datastring += String(mb.Hreg(230));
+    datastring += "\t";
+    datastring += String(mb.Hreg(231));
+    datastring += "\t";
+    datastring += String(mb.Hreg(232));
+      
+    dataWriteln(myFile, datastring);
+
+}
+
+void startFrom(){
+
+  File dataFile = SD.open(myFile);
+  int linenum = 0;
+  while (dataFile.available()){
+    
+      dataFile.readStringUntil('\r');
+      position = dataFile.position();
+      linenum++;
+
+      // if changes - readRecords is equal to linenumber
+      if((mb.Hreg(105) - mb.Hreg(108)) == linenum){
+        dataFile.close();
+        //mb.Hreg(108, 0);
+        return;
+        
+      }
+    
+  }
+  dataFile.close();
+  
+}
+
+String getLine1(String filename, int interval2){
+
+  File dataFile = SD.open(filename);
+  dataFile.seek(position);
+  // read the line
+  String data = dataFile.readStringUntil('\r');
+  
+  for(int i = 0; i < interval2; i++){
+    data = dataFile.readStringUntil('\r');
+  }
+  
+  return data;
+
+  
+}
+
+
+
+
+
+
+
+/*I think you need to explain in detail what you want to achieve. From what I can figure out, you want to jump to a specific line based on a random number. If that is the case, the trick could be to use a form of indexing.
+
+Read your file (e.g. in setup()) once character by character.
+If you encounter a '\n', you store that position (actually the next one) in an array. This array should be 600 elements. In your wordList() function, you open the file, use fseek() and read the line.
+
+The positions are unsigned integers (if your file is less than 64kB) and will cost you 1200 bytes. This is quite a lot and including the SD library causes already requires more RAM then available.
+
+
+*/

@@ -42,7 +42,7 @@ void setup() {
   Serial.println("initialization done.");
 
   // re-open the file for reading:
-  myFile = SD.open("datalog4.txt");
+  myFile = SD.open("pls9wo.txt");
   if (myFile) {
     Serial.println("datalog4.txt:");
 
