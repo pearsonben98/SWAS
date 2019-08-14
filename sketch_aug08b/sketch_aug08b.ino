@@ -9,7 +9,7 @@ DAQfactory computer
 #include <SD.h>
 #include <Modbus.h>
 #include <ModbusSerial.h>  //for modbus chip MAX485
-//#include <Mux.h>  //multiplex for CD74HC4067
+
 
 const int modbus_ID = 5;  //this is unique for each case (1-247)
 
