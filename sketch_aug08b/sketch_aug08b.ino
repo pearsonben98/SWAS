@@ -98,15 +98,15 @@ ModbusSerial mb;
 
 
 void setup() {
-  
+    /*
     Serial.begin(9600);
     while (!Serial) {
       ; // wait for serial port to connect. Needed for native USB port only
     }
-    
+    */
   // see if the card is present and can be initialized:
   if (!SD.begin(chipSelect)) {
-    Serial.println("Card failed, or not present");
+    //Serial.println("Card failed, or not present");
     // don't do anything more:
     while (1);
   }
@@ -115,8 +115,8 @@ void setup() {
  
     
     // Config Modbus Serial (port, speed, byte format, readEnable pin) 
-    mb.config(&Serial, 115200, SERIAL_8N1);  // &serial (uno) or &serial1 (leonardo)
-    //mb.config(&Serial1,115200, SERIAL_8N1, 2); uncomment for rs485 comms
+    //mb.config(&Serial, 115200, SERIAL_8N1);  // &serial (uno) or &serial1 (leonardo)
+    mb.config(&Serial1,115200, SERIAL_8N1, 2); 
     
     // Set the Slave ID (1-247)
     mb.setSlaveId(modbus_ID);  
@@ -327,7 +327,7 @@ void dataWrite(String filename, String dataString){
     dataFile.close();
     }
     else {
-      Serial.println("error opening datalog.txt");
+     // Serial.println("error opening datalog.txt");
     }
   
 }
@@ -346,7 +346,7 @@ void dataWriteln(String filename, String dataString){
     //Serial.println(dataString);
     }
     else {
-      Serial.println("error opening datalog.txt");
+      //Serial.println("error opening datalog.txt");
     }
 }
 
