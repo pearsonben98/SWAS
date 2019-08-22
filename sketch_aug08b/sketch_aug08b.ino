@@ -23,6 +23,8 @@ word v_changes = 0;
 
 
 unsigned long position = 0;
+// change this to data.txt for an actual log to be shown
+// data1 for the presentation screenshot
 String myFile = "data.txt";
 int interval = 0;
 
@@ -200,6 +202,8 @@ void setup() {
      *  unknown. */
     if(!SD.exists(myFile)){
       dataWriteln(myFile, "0\t0\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0");
+      //dataWriteln(myFile, "0\t0\t0\t0\t1\t1\t2\t2\t3\t3\t1\t2\t0\t0\t3\t2\t1\t3\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0");
+
     }
 
 
@@ -252,6 +256,14 @@ void loop() {
    int hreg108 = mb.Hreg(108);
    readLineValue = mb.Hreg(106);
   
+
+
+  
+
+
+
+
+
 
   // if the file contains data, put the number of lines into register 105
   if(mb.Hreg(105) == 0){

@@ -1,0 +1,14 @@
+read registers from the arduino with:
+mb.Hreg(address)
+
+but the issue is that you can only use the com port one at a time, so you cant read register values on the arduino while 
+writing values to the registers in daqfactory.
+
+theres an issue with the baudrates again. when setting the serial to a baudrate of 9600, daqfactory will not recognize the
+arduino whatsoever, the only way for it to recognize is at 115200 baudrate. this is an issue because the serial baudrate on
+the arduino is fixed at 9600, therefore its impossible to access the serial ports and send/recieve data from the arduino.
+
+In DAQFactory with the baudrate on 115200, there are constant ModbusRTU errors that i cant fix when you open and close the valves.
+the error is caught on the line: device.SWAS.setRegisterS16(case_id,200,timestamp1 & timestamp_mask) however when using the 
+command line, this code works perfectly fine. It catches errors aswell sometimes on the device.SWAS.forceCoil(case_id,0,0) line
+and i have no idea why. 

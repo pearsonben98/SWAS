@@ -1,0 +1,27 @@
+Things to do:
+
+	- add flight no. register
+	- arduino on turn on reads previous line of sd card and store into information registers (200-232) which is current status of case
+	- daqfactory needs to retrieve information registers x	
+	- when selecting a case_id, daqfactory reads contents of sd card and displays it to a table
+	- when you make a change, put the contents of the array into the table instead of reading from the sd card again
+	- maybe add a number of lines register, this register is brought over with the other 100 registers, then in daqfactory
+	 make a loop that gets the sd card data line by line
+
+
+
+had a bug which broke the whole thing and caused modbus ID mismatch errors. the issue was that the maximum amount of characters the SD card
+can name a file is: 8 characters, and the file i was writing to was 9 characters. 
+
+
+done:
+
+	- all values from daqfactory get passed into correct registers, and the data is then stored correctly on the SD card
+	- 
+
+tomorrow:
+	
+	- try and continue converting the strings into char arrays. right now, the formatLine function in charTest isnt working correctly.
+	- the values arent being stored in the registers properly so need to figure out whats going wrong.
+	- 
+

@@ -1,0 +1,32 @@
+have to use the signed 16 bit holding registers, as they are the only registers that you can write to multiple registers with one instruction
+
+however this means that there are errors when storing the timestamps in these registers, as the first bit is signed
+therefore need to do a signed to unsigned conversion: signed ->unsigned = signed_value + (max_int_value) + 1
+where max_int_value in this case is 2^16 = 65536
+
+4 registers to store the correct timestamps,
+ - 2 of them to store open-valve timestamp
+ - 2 of them to store close-valve timestamp
+
+due to the signed issue, when accessing the holding registers to obtain the timestamps, you need to first convert from signed to unsigned.
+
+created a timestamp sequence, which when called, stores the current time in either the open-valve text field, or the close-valve text field
+depending on wether the valve is already opened or closed
+(simple if/else block)
+
+working combobox, that changes the case_id instead of having to type the digits
+
+text field which calculates the period the valve was open for, by reading from all 4 of the timestamp registers and using maths to convert
+everything to seconds, and then subtracts valve_open_timestamp from valve_close_timestamp
+unixtime/60/60/24 = time elapsed since 1070-01-01 in days
+
+adafruit SD card shield fits fine on the arduino mega, but the correct ports are in the wrong place for some reason. turns out you need to
+use jumper cables to connect the right ports, so theres no point doing anything until i get a working was arduino shield board. 
+https://embedjournal.com/arduino-sd-card-initialization-failed/
+
+compiler segmentation errors which stopped me from adding more than 17 holding registers, in the arduino code.
+Fix found: https://forum.arduino.cc/index.php?topic=572746.0
+
+tried to make a variable associated with case_id that counts how many times the valve has been opened, however this didnt work and i realized
+that you can just get that info from the log files anyway
+

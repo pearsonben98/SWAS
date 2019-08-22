@@ -1,0 +1,9 @@
+the arduino file in pears/documents/uni timestamp works properly. however in daqfactory need to go to the timestamp sequence
+and uncomment the two setregister lines, aswell as commenting out the setmultiple registers line.
+
+
+the arduino file with the same name but in the git repository is the updated version, however there it doesnt work properly with
+storing the array into the registers. it wont let me create a text file inside the if (prev< whatever) loop. so on monday need to get
+that to work.
+
+

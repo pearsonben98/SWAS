@@ -1,0 +1,78 @@
+things to do:
+
+add blue colour for unknown status
+
+add hover over button description of colour and show pressure
+
+
+
+
+
+
+
+
+
+green means been evacuated, ready to be filled on plane, flight number = 0
+
+red means is filled by aircraft software and given flight number
+
+yellow means been a bit has been sampled, but more might remain based on pressure
+
+
+if its red or yelow you should be able to sample the case, 
+
+
+red->yellow
+
+yellow->evacuate->green
+
+plane software turns from green->red
+
+
+if plane software is ran and case is yellow or red you cant do anything
+
+
+
+
+
+
+
+
+Bugs:
+
+SD card still gets double filled everytime you launch DAQFactory.
+
+The SD card doesnt log the last action, only the second to last action for some weird reason. If you press
+a button 6 times, it will only log 5 presses.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+make time stamp in DF human readable
+
+
+
+
+
+
+
+
+
+
+
