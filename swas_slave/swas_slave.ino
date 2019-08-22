@@ -1,5 +1,4 @@
 
-
 /*
 SWAS case software Stephen J Andrews 2017
 
@@ -14,17 +13,22 @@ DAQfactory computer
 
 const int modbus_ID = 5;  //this is unique for each case (1-247)
 
-//case details, 'v' prefix indicates 'value of' num_cans for example
-const word v_case_id = modbus_ID;     //should match the modbus ID
+/* These values are assigned to the registers on each SWAS case.  They are to be changed in code depending on 
+ *  the parameters of the case.
+*/
+const word v_case_id = modbus_ID;     
 const word v_flow_thro = 0;
 const word v_num_cans = 16;
-const word v_volume = 1500;
+const word v_volume = 1400;
 word v_changes = 0;
 
+// global variables to be used within functions
 
+// position stores the file pointer position in bytes
 unsigned long position = 0;
+// myFile is the file on the SD card which logs all of the case events
 String myFile = "data.txt";
-int interval = 0;
+// line_interval is the 
 
 
 //**********************************
@@ -103,8 +107,8 @@ void setup() {
     Serial.begin(9600);
     while (!Serial) {
       ; // wait for serial port to connect. Needed for native USB port only
-    }*/
-    
+    }
+    */
   // see if the card is present and can be initialized:
   if (!SD.begin(chipSelect)) {
     //Serial.println("Card failed, or not present");
@@ -112,14 +116,12 @@ void setup() {
     while (1);
   }
 
-    
-    
     pinMode(13, OUTPUT);
  
     
     // Config Modbus Serial (port, speed, byte format, readEnable pin) 
-    mb.config(&Serial, 115200, SERIAL_8N1);  // &serial (uno) or &serial1 (leonardo)
-    //mb.config(&Serial1,115200, SERIAL_8N1, 2); 
+    //mb.config(&Serial, 115200, SERIAL_8N1);  // &serial (uno) or &serial1 (leonardo)
+    mb.config(&Serial1,115200, SERIAL_8N1, 2); 
     
     // Set the Slave ID (1-247)
     mb.setSlaveId(modbus_ID);  
@@ -216,8 +218,6 @@ void setup() {
       formatData(getLine(myFile, v_changes));
     }
 
-    
-        
 }
 
 
@@ -235,7 +235,6 @@ void loop() {
    digitalWrite(24, mb.Coil(2));
    digitalWrite(25, mb.Coil(3));
    digitalWrite(26, mb.Coil(4));
-   digitalWrite(27, mb.Coil(5));
    digitalWrite(28, mb.Coil(6));
    digitalWrite(29, mb.Coil(7)); 
    digitalWrite(30, mb.Coil(8)); 
@@ -250,6 +249,7 @@ void loop() {
    
    int hreg105 = mb.Hreg(105);
    int hreg108 = mb.Hreg(108);
+   digitalWrite(27, mb.Coil(5));
    readLineValue = mb.Hreg(106);
   
 
@@ -279,22 +279,11 @@ void loop() {
        *  and put the correct values into each register, for DAQfactory to read and then place the 
        *  values into a column on the table
        */
-      formatData(getLine1(myFile, interval));
+      formatData(getLine1(myFile));
       prevLineValue = readLineValue;
-      interval++;
    }
 
   
-   
-
-
-   /* If statement to check if the DAQFactory table has finished populating. If it has, set the 
-    *  interval back to 0 so you can press the populate table button again if you want
-    */
-   if(mb.Hreg(110) == 2){
-    interval = 0;
-   }
-   
   /* If needed, to convert from the two timestamps stored in the registers to proper UNIX time,
    * you have to concatenate the two values like this:
    * concat = hreg202 << 16 | hreg201;
@@ -343,17 +332,15 @@ void dataWriteln(String filename, String dataString){
 
     if (dataFile) {
      
-    dataFile.println(dataString);
-    dataFile.close();
-    // print to the serial port too:
-    //Serial.println(dataString);
+      dataFile.println(dataString);
+      dataFile.close();
     }
     else {
-      //Serial.println("error opening datalog.txt");
     }
 }
 
-/* function to count how many lines of data are stored on the SD card. */
+/* function to count how many lines of data are stored on the SD card.  Value is placed in v_changes
+which then gets placed into a register. */
 int getLineCount(String filename){
   
   File dataFile = SD.open(filename);
@@ -368,8 +355,9 @@ int getLineCount(String filename){
 }
 
 
-/* getLine function isnt used currently, but it takes linenumber as an argument, and the function will
- *  return the data on line lineNumber as a string. */
+/* old function which takes the arguments of a lineNumber, and returns the contents of the file on 
+ *  line lineNumber. Not used anymore due to being slow
+ */
 String getLine(String filename, int lineNumber){
 
   File dataFile = SD.open(filename);
@@ -390,10 +378,11 @@ String getLine(String filename, int lineNumber){
 }
 
 
-/* FormatData will take arguments of a String, which will be retrieved from the function "getLine1"
- *  the String gets converted into a char array, and then split up into separate variables. These 
- *  variables then get stored in their respective registers, ready for DAQfactory to read. 
- *  This function is used to populate the case history table.  */
+/* FormatData takes the arguments of a string of data. The data string should be one large string with 32 different datapoints
+ *  which are obtained from the getLine1 function. This string is then read in tab-delimited format, where each instance gets stored
+ *  in the separate char array called token. Token is then converted into an integer, and placed into the corresponding register. 
+ *  This process repeats until the end of the string has been reached and the registers all have values.
+ */
 void formatData(String data){
 
     // converting the string to a char array
@@ -412,7 +401,7 @@ void formatData(String data){
     mb.Hreg(i, value);
   
     i++;
-    // iterates through the rest of the char array
+    // iterates through the rest of the char array and puts values in rest of the registers
     while(token != NULL){
       
       token = strtok(NULL, "\t");
@@ -421,11 +410,9 @@ void formatData(String data){
 
       i++;
 
-     
     }
    
 }
-
 
 /* Function which reads all the values currently in the registers, appends the data to a string, then
  *  puts the string onto the SD card. */
@@ -451,7 +438,6 @@ void writeToSD(){
  *  table in DAQfactory. */
 void startFrom(){
   
-    
     File dataFile = SD.open(myFile);
     int linenum = 0;
     while (dataFile.available()){
@@ -466,13 +452,8 @@ void startFrom(){
           return;
           
         }
-    
     }
     dataFile.close();
- 
-
-  
-  
   
 }
 
@@ -482,8 +463,8 @@ void startFrom(){
  * text file, the cursor will jump straight to the line specified by position, which is set from 
  * DAQfactory. 
  * 
- * Depending on the value of interval, this function will read line number "position + interval" */
-String getLine1(String filename, int interval2){
+ * Depending on the value of line_interval, this function will read line number "position + line_interval" */
+String getLine1(String filename){
   
     File dataFile = SD.open(filename);
     dataFile.seek(position);
