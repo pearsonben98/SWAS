@@ -25,7 +25,7 @@ word v_changes = 0;
 unsigned long position = 0;
 // change this to data.txt for an actual log to be shown
 // data1 for the presentation screenshot
-String myFile = "data.txt";
+String myFile = "presentation.txt";
 int interval = 0;
 
 
@@ -201,8 +201,8 @@ void setup() {
      *  Putting 3's in all the valve states, to indicate that the state of the valve is currently
      *  unknown. */
     if(!SD.exists(myFile)){
-      dataWriteln(myFile, "0\t0\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0");
-      //dataWriteln(myFile, "0\t0\t0\t0\t1\t1\t2\t2\t3\t3\t1\t2\t0\t0\t3\t2\t1\t3\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0");
+      //dataWriteln(myFile, "0\t0\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t3\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0");
+      dataWriteln(myFile, "0\t0\t0\t0\t1\t1\t2\t2\t3\t3\t1\t2\t0\t0\t3\t2\t1\t3\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0");
 
     }
 
